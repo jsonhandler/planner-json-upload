@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Planner JSON Uploader</title>
+  <style>
+    body { font-family:sans-serif;text-align:center;margin-top:50px }
+    #drop { border:3px dashed #888;padding:40px;width:60%;margin:auto }
+  </style>
+</head>
+<body>
+  <h2>Drop your <code>tasks.json</code> here</h2>
+  <div id="drop">…or click to browse…</div>
+<script>
+const url = "https://hook.us1.make.com/ve4eco5ubbx7siirbqz34pypuvr5rb0d";   // ← your webhook
+const box = document.getElementById('drop');
+
+box.ondragover = e => { e.preventDefault(); box.style.borderColor="#4CAF50"; };
+box.ondragleave = () => box.style.borderColor="#888";
+box.onclick = () => fileInput.click();
+
+const fileInput = document.createElement('input');
+fileInput.type = 'file'; fileInput.accept = '.json';
+fileInput.onchange = e => upload(e.target.files[0]);
+
+box.ondrop = e => { e.preventDefault(); upload(e.dataTransfer.files[0]); };
+
+function upload(file){
+  if(!file) return;
+  box.textContent = "Uploading…";
+  fetch(url, {method:"POST", body:file, headers:{'Content-Type':'application/json'}})
+    .then(r => r.ok ? box.textContent="✅ Sent!" : box.textContent="❌ Error "+r.status)
+    .catch(()=> box.textContent="❌ Network error");
+}
+</script>
+</body>
+</html>
